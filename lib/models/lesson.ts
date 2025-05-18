@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const LessonSchema = new mongoose.Schema({
   title: String,
   hour: Number,
-  day: Number,
+  day: String,
   userId: String, // user-specific
   status: {
     type: String,

@@ -16,6 +16,43 @@ type Props = {
 export default function EditLessonModal({ lesson, onClose, onSave, onDelete }: Props) {
   const [title, setTitle] = useState(lesson.title);
 
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`/api/lessons/${lesson._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...lesson, title }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update lesson');
+      }
+
+      const updatedLesson = await response.json();
+      onSave(updatedLesson);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`/api/lessons/${lesson._id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete lesson');
+      }
+
+      onDelete(lesson._id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent>
@@ -26,10 +63,10 @@ export default function EditLessonModal({ lesson, onClose, onSave, onDelete }: P
         <Input value={title} onChange={(e) => setTitle(e.target.value)} />
 
         <div className="flex justify-between mt-4 gap-2">
-          <Button variant="destructive" onClick={() => onDelete(lesson._id)}>
+          <Button variant="destructive" onClick={handleDelete}>
             Delete
           </Button>
-          <Button onClick={() => onSave({ ...lesson, title })}>
+          <Button onClick={handleSave}>
             Save
           </Button>
         </div>

@@ -18,9 +18,11 @@ export default function AddLessonModal({ onAdd, onClose, userId }: Props) {
   const [day, setDay] = useState(0);
 
   async function handleSubmit() {
+    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    const dayString = daysOfWeek[day];
     const res = await fetch('/api/lessons', {
       method: 'POST',
-      body: JSON.stringify({ title, hour, day, userId }),
+      body: JSON.stringify({ title, hour, day: dayString, userId }),
     });
     const data = await res.json();
     onAdd(data);
@@ -41,12 +43,17 @@ export default function AddLessonModal({ onAdd, onClose, userId }: Props) {
             value={hour}
             onChange={(e) => setHour(Number(e.target.value))}
           />
-          <Input
-            type="number"
-            placeholder="Day (0=Mon)"
+          <select
             value={day}
             onChange={(e) => setDay(Number(e.target.value))}
-          />
+            className="border rounded px-2 py-1"
+          >
+            <option value={0}>Mon</option>
+            <option value={1}>Tue</option>
+            <option value={2}>Wed</option>
+            <option value={3}>Thu</option>
+            <option value={4}>Fri</option>
+          </select>
         </div>
         <Button onClick={handleSubmit} disabled={!title}>Add</Button>
       </DialogContent>

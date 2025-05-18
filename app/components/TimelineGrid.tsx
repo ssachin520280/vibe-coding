@@ -11,7 +11,8 @@ import DroppableSlot from './DroppableSlot';
 import EditLessonModal from './EditLessonModal';
 import { Lesson } from '@/types/lesson';
 import { Button } from '@/components/ui/button';
-import AddLessonModal from './AddlessonModal';
+import AddLessonModal from './AddLessonModal';
+import { Plus } from 'lucide-react';
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
@@ -20,14 +21,9 @@ const hours = Array.from({ length: 9 }, (_, i) => i + 9); // 9AM to 17PM
 export default function TimelineGrid() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [lessons, setLessons] = useState<Lesson[]>([
-    { _id: '1', title: 'Math', day: 'Mon', hour: 9, userId: "1" },
-    { _id: '2', title: 'Science', day: 'Tue', hour: 10, userId: "1" },
-    { _id: '3', title: 'Art', day: 'Wed', hour: 11, userId: "1" },
-  ]);  
+  const [lessons, setLessons] = useState<Lesson[]>([]);  
 
   const handleLessonClicked = (lesson: Lesson) => {
-    console.log("clciekd")
     setSelectedLesson(lesson)
   }
 
@@ -40,9 +36,19 @@ export default function TimelineGrid() {
   
     setLessons((prev) =>
       prev.map((lesson) =>
-        lesson._id === active.id ? { ...lesson, day: newDay, hour: newHour } : lesson
+      lesson._id === active.id ? { ...lesson, day: newDay, hour: newHour } : lesson
       )
     );
+
+    fetch(`/api/lessons/${active.id}`, {
+      method: 'PUT',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ day: newDay, hour: newHour }),
+    }).catch((error) => {
+      console.error('Failed to update lesson in the database:', error);
+    });
   };  
 
   useEffect(() => {
@@ -50,7 +56,10 @@ export default function TimelineGrid() {
       headers: { 'x-user-id': "1" } // replace it with userId variable
     })
       .then(res => res.json())
-      .then(setLessons);
+      .then((res) => {
+        console.log(res);
+        setLessons(res);
+      });
   }, []);
   
 
@@ -105,8 +114,13 @@ export default function TimelineGrid() {
           </>
         ))}
       </div>
-      <Button onClick={() => setIsAddModalOpen(true)} className="ml-auto mb-4">
-        +   Add Lesson
+      <Button
+        onClick={() => setIsAddModalOpen(true)}
+        className="fixed bottom-4 right-4 z-50"
+        size="icon"
+        variant="default"
+      >
+        <Plus />
       </Button>
     </DndContext>
   );
