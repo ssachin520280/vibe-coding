@@ -1,13 +1,20 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
-if (!MONGODB_URI) throw new Error("Mongo URI missing");
+if (!MONGODB_URI) throw new Error("Please define MONGODB_URI in .env");
 
-export const connectDB = async () => {
-  if (mongoose.connections[0].readyState) return;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cached = (global as any).mongoose || { conn: null, promise: null };
 
-  await mongoose.connect(MONGODB_URI, {
-    dbName: "lessontracker",
-  });
-};
+export async function connectToDB() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: false,
+    });
+  }
+  cached.conn = await cached.promise;
+  return cached.conn;
+}

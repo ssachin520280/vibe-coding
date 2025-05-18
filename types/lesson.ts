@@ -3,6 +3,7 @@ export type Lesson = {
   title: string;
   hour: number;
   day: string;        // "Monday", "Tuesday", etc.
+  userId: string;
   status?: "pending" | "completed" | "missed";
   icon?: string;
 };

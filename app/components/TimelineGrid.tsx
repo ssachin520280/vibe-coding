@@ -6,21 +6,24 @@ import {
   DragEndEvent,
 } from '@dnd-kit/core';
 import LessonCard from './LessonCard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DroppableSlot from './DroppableSlot';
 import EditLessonModal from './EditLessonModal';
 import { Lesson } from '@/types/lesson';
+import { Button } from '@/components/ui/button';
+import AddLessonModal from './AddlessonModal';
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 const hours = Array.from({ length: 9 }, (_, i) => i + 9); // 9AM to 17PM
 
 export default function TimelineGrid() {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([
-    { _id: '1', title: 'Math', day: 'Mon', hour: 9 },
-    { _id: '2', title: 'Science', day: 'Tue', hour: 10 },
-    { _id: '3', title: 'Art', day: 'Wed', hour: 11 },
+    { _id: '1', title: 'Math', day: 'Mon', hour: 9, userId: "1" },
+    { _id: '2', title: 'Science', day: 'Tue', hour: 10, userId: "1" },
+    { _id: '3', title: 'Art', day: 'Wed', hour: 11, userId: "1" },
   ]);  
 
   const handleLessonClicked = (lesson: Lesson) => {
@@ -42,8 +45,24 @@ export default function TimelineGrid() {
     );
   };  
 
+  useEffect(() => {
+    fetch('/api/lessons', {
+      headers: { 'x-user-id': "1" } // replace it with userId variable
+    })
+      .then(res => res.json())
+      .then(setLessons);
+  }, []);
+  
+
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      {isAddModalOpen && (
+        <AddLessonModal
+          userId={"1"} // TODO: replace with userId variable
+          onClose={() => setIsAddModalOpen(false)}
+          onAdd={(newLesson) => setLessons((prev) => [...prev, newLesson])}
+        />
+      )}
       {selectedLesson && (
         <EditLessonModal
           lesson={selectedLesson}
@@ -69,23 +88,26 @@ export default function TimelineGrid() {
       {hours.map((hour) => (
         <>
           <div className="text-right pr-2 font-semibold">{hour}:00</div>
-              {days.map((day) => {
-                const slotId = `${day}-${hour}`;
-                const lessonsInSlot = lessons.filter(
-                  (l) => l.day === day && l.hour === hour
-                );
+            {days.map((day) => {
+              const slotId = `${day}-${hour}`;
+              const lessonsInSlot = lessons.filter(
+                (l) => l.day === day && l.hour === hour
+              );
 
-                return (
-                  <DroppableSlot key={slotId} id={slotId}>
-                    {lessonsInSlot.map((lesson) => (
-                      <LessonCard key={lesson._id} id={lesson._id} title={lesson.title} onClick={() => handleLessonClicked(lesson)} />
-                    ))}
-                  </DroppableSlot>
-                );
-              })}
-            </>
-          ))}
-        </div>
+              return (
+                <DroppableSlot key={slotId} id={slotId}>
+                  {lessonsInSlot.map((lesson) => (
+                    <LessonCard key={lesson._id} id={lesson._id} title={lesson.title} onClick={() => handleLessonClicked(lesson)} />
+                  ))}
+                </DroppableSlot>
+              );
+            })}
+          </>
+        ))}
+      </div>
+      <Button onClick={() => setIsAddModalOpen(true)} className="ml-auto mb-4">
+        +   Add Lesson
+      </Button>
     </DndContext>
   );
 }

@@ -1,13 +1,19 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const LessonSchema = new mongoose.Schema({
   title: String,
-  startTime: String,
-  endTime: String,
-  day: String,
-  status: String,
-  icon: String,
+  hour: Number,
+  day: Number,
+  userId: String, // user-specific
+  status: {
+    type: String,
+    enum: ['missed', 'completed', 'pending'],
+    required: false
+  },
+  icon: {
+    type: String,
+    required: false
+  }
 });
 
-export const Lesson =
-  mongoose.models.Lesson || mongoose.model("Lesson", LessonSchema);
+export default mongoose.models.Lesson || mongoose.model('Lesson', LessonSchema);
