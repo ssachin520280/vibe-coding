@@ -6,9 +6,10 @@ import { motion } from 'framer-motion';
 type Props = {
   id: string;
   title: string;
+  onClick?: () => void;
 };
 
-export default function LessonCard({ id, title }: Props) {
+export default function LessonCard({ id, title, onClick }: Props) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -21,6 +22,7 @@ export default function LessonCard({ id, title }: Props) {
 
   return (
     <motion.div
+      onClick={onClick}
       ref={setNodeRef}
       style={style}
       {...listeners}
