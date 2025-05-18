@@ -1,6 +1,7 @@
 'use client';
 
 import { useDraggable } from '@dnd-kit/core';
+import { motion } from 'framer-motion';
 
 type Props = {
   id: string;
@@ -12,19 +13,26 @@ export default function LessonCard({ id, title }: Props) {
     id,
   });
 
+  const style = transform
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`,
+      }
+    : undefined;
+
   return (
-    <div
+    <motion.div
       ref={setNodeRef}
+      style={style}
       {...listeners}
       {...attributes}
-      className="bg-blue-600 text-white rounded-lg p-2 cursor-grab active:cursor-grabbing transition shadow-md"
-      style={{
-        transform: transform
-          ? `translate(${transform.x}px, ${transform.y}px)`
-          : undefined,
-      }}
+      layout
+      initial={{ scale: 1 }}
+      whileHover={{ scale: 1.03, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}
+      whileTap={{ scale: 1.05 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      className="bg-white dark:bg-gray-800 text-black dark:text-white p-2 rounded-md border shadow-sm cursor-grab active:cursor-grabbing select-none"
     >
       {title}
-    </div>
+    </motion.div>
   );
 }
