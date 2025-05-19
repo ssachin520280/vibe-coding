@@ -4,7 +4,8 @@ import Lesson from '@/lib/models/lesson';
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   await connectToDB();
   const data = await req.json();
-  const lesson = await Lesson.findByIdAndUpdate(params.id, data, { new: true });
+  const { id } = await params;
+  const lesson = await Lesson.findByIdAndUpdate(id, data, { new: true });
   return Response.json(lesson);
 }
 
