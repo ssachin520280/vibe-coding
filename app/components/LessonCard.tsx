@@ -34,7 +34,7 @@ export default function LessonCard({ id, title, onClick }: Props) {
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className="bg-white dark:bg-gray-800 text-black dark:text-white p-2 rounded-md border shadow-sm cursor-grab active:cursor-grabbing select-none"
     >
-      {title}
+      <div className="truncate">{title}</div>
     </motion.div>
   );
 }

@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from './components/Header';
 import TimelineGrid from './components/TimelineGrid';
 import LessonModal from './components/LessonModal';
-import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
 
 export default function HomePage() {
@@ -13,7 +12,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-background text-foreground p-4">
       {/* Top Bar */}
-      <Header onAddLesson={() => setIsModalOpen(true)} />
+      <Header />
 
       {/* Timeline View */}
       <div className="mt-6 overflow-x-auto">
